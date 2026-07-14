@@ -62,7 +62,24 @@ async def latency(interaction: discord.Interaction):
                   )
 async def tag(interaction: discord.Interaction, user: discord.Member, message: str):
     await interaction.response.send_message(f"{user.mention} {message}")
-    
+
+
+#spamtagコマンド
+@bot.tree.command(name="spamtag",
+                  description="To Tag a user with a message multiple times, You can only tag up to 10 times."
+                  )
+async def spamtag(interaction: discord.Interaction, user: discord.Member, message: str, times: int):
+    if times > 10:
+        await interaction.response.send_message("You can only tag a user up to 10 times.")
+        return
+    if times < 1:
+        await interaction.response.send_message("You must tag a user at least once.")
+        return
+
+    await interaction.response.send_message(f"Tagging {user.mention} {times} times with the message: {message}")
+    times = times + 1  # Increment times by 1 to include the initial message
+    for _ in range(times):
+        await interaction.channel.send(f"{user.mention} {message}")
 
 
 
