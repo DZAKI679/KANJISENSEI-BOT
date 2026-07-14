@@ -60,7 +60,7 @@ async def latency(interaction: discord.Interaction):
 @bot.tree.command(name="tag",
                   description="To Tag a user with a message."
                   )
-async def tag(interaction: discord.interaction, user: discord.Member, message: str):
+async def tag(interaction: discord.Interaction, user: discord.Member, message: str):
     await interaction.response.send_message(f"{user.mention} {message}")
     
 
