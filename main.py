@@ -3,6 +3,8 @@ from discord.ext import commands
 import logging
 from dotenv import load_dotenv
 import os
+import requests
+import random
 
 # Load environment variables from .env file
 load_dotenv()
@@ -81,6 +83,57 @@ async def spamtag(interaction: discord.Interaction, user: discord.Member, messag
     for _ in range(times):
         await interaction.channel.send(f"{user.mention} {message}")
 
+
+#漢字generateコマンド
+@bot.tree.command(
+    name="kanji_n5",
+    description="Generate a random Kanji character."
+)
+async def kanji_n5(interaction: discord.Interaction):
+    try:
+        
+        # Ambil daftar kanji Grade 1
+        random_response = requests.get("https://kanjiapi.dev/v1/kanji/grade-1")
+        random_response.raise_for_status()
+
+        kanji_list = random_response.json()
+        kanji = random.choice(kanji_list)
+
+        # Ambil detail kanji
+        detail_response = requests.get(f"https://kanjiapi.dev/v1/kanji/{kanji}")
+        detail_response.raise_for_status()
+        data = detail_response.json()
+
+        embed = discord.Embed(
+            title=f"Random Kanji: {data['kanji']}",
+            color=discord.Color.blue()
+        )
+
+        embed.add_field(
+            name="📖 On Readings",
+            value=", ".join(data["on_readings"]) or "None",
+            inline=False
+        )
+
+        embed.add_field(
+            name="📚 Kun Readings",
+            value=", ".join(data["kun_readings"]) or "None",
+            inline=False
+        )
+
+        embed.add_field(
+            name="💡 Meanings",
+            value=", ".join(data["meanings"]) or "None",
+            inline=False
+        )
+
+        await interaction.response.send_message(embed=embed)
+
+    except Exception as e:
+        await interaction.response.send_message(
+            f"❌ Failed to fetch kanji.\n```{e}```",
+            ephemeral=True
+        )
 
 
 
